@@ -10,7 +10,7 @@ namespace Bff.Api.Controllers
         [HttpGet("ping")]
         public ActionResult<string> Ping()
         {
-            return Ok("pong");
+            return Ok("pong2");
         }
     }
 }
