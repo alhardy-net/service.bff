@@ -8,10 +8,15 @@
       "name": "service-bff-api",
       "image": "",
       "essential": true,
-      "environment": [{
-        "name": "ASPNETCORE_ENVIRONMENT",
-        "value": "Production"
-      }],
+      "environment": [
+        {
+          "name": "ASPNETCORE_ENVIRONMENT",
+          "value": "Production"
+        },
+        {
+          "name": "CustomerApiBaseAddress",
+          "value": "http://customers-api.alhardynet.local"
+        }],
       "portMappings": [{
         "hostPort": 80,
         "protocol": "tcp",
