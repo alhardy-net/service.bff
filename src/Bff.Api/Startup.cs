@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -18,6 +19,11 @@ namespace Bff.Api
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddHttpClient("customers", c =>
+            {
+                c.BaseAddress = new Uri(Configuration.GetValue<string>("CustomerApiBaseAddress"));
+                c.DefaultRequestHeaders.Add("Accept", "application/json");
+            });
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
