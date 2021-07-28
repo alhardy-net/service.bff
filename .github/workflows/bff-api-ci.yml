@@ -30,21 +30,6 @@ jobs:
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
-        
-      - uses: actions/upload-artifact@v2
-        with:
-          name: dev-bff-api-task-definition.json
-          path: .task-definitions/dev-bff-api.json
-          
-      - uses: actions/upload-artifact@v2
-        with:
-          name: stage-bff-api-task-definition.json
-          path: .task-definitions/stage-bff-api.json
-          
-      - uses: actions/upload-artifact@v2
-        with:
-          name: prod-bff-api-task-definition.json
-          path: .task-definitions/prod-bff-api.json
       
       - name: Build, tag, and push image to ECR
         id: build-image
@@ -73,17 +58,15 @@ jobs:
           role-duration-seconds: 900
           aws-region: ap-southeast-2
           
-      - uses: actions/download-artifact@v2
-        id: download-task-definition
-        with:
-          name: dev-bff-api-task-definition.json
-          path: ./dev-bff-api.json
+      - name: Download task definition
+        run: |
+          aws ecs describe-task-definition --task-definition service --query taskDefinition > task-definition.json
 
       - name: Fill in the new image ID in the Amazon ECS task definition
         id: task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition: ${{ steps.download-task-definition.outputs.download-path }}/dev-bff-api.json
+          task-definition: task-definition.json
           container-name: service-bff-api
           image: ${{ needs.Build.outputs.image }}
 
@@ -112,17 +95,15 @@ jobs:
           aws-region: ap-southeast-2
           role-skip-session-tagging: true # TODO: Fix permission and set to false
 
-      - uses: actions/download-artifact@v2
-        id: download-task-definition
-        with:
-          name: stage-bff-api-task-definition.json
-          path: ./stage-bff-api.json
+      - name: Download task definition
+        run: |
+          aws ecs describe-task-definition --task-definition service --query taskDefinition > task-definition.json
 
       - name: Fill in the new image ID in the Amazon ECS task definition
         id: task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition: ${{ steps.download-task-definition.outputs.download-path }}/stage-bff-api.json
+          task-definition: task-definition.json
           container-name: service-bff-api
           image: ${{ needs.Build.outputs.image }}
 
@@ -150,17 +131,15 @@ jobs:
           role-duration-seconds: 900
           aws-region: ap-southeast-2
 
-      - uses: actions/download-artifact@v2
-        id: download-task-definition
-        with:
-          name: prod-bff-api-task-definition.json
-          path: ./prod-bff-api.json
+      - name: Download task definition
+        run: |
+          aws ecs describe-task-definition --task-definition service --query taskDefinition > task-definition.json
 
       - name: Fill in the new image ID in the Amazon ECS task definition
         id: task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition: ${{ steps.download-task-definition.outputs.download-path }}/prod-bff-api.json
+          task-definition: task-definition.json
           container-name: service-bff-api
           image: ${{ needs.Build.outputs.image }}
 
