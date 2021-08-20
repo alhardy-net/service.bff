@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
+﻿using System.Net.Http;
+using System.Net.Http.Json;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Bff.Api.Dtos;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 namespace Bff.Api.Controllers
 {
@@ -31,9 +28,22 @@ namespace Bff.Api.Controllers
             customerGetResponse.EnsureSuccessStatusCode();
 
             var customerApiResponse = await customerGetResponse.Content.ReadAsStreamAsync();
-            var response = await JsonSerializer.DeserializeAsync<Customer>(customerApiResponse, new JsonSerializerOptions { PropertyNameCaseInsensitive = true});
+            var response = await JsonSerializer.DeserializeAsync<Customer>(customerApiResponse,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
             return response;
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> Post(CreateCustomer command)
+        {
+            var client = _clientFactory.CreateClient("customers");
+
+            var customerGetResponse = await client.PostAsJsonAsync("/", command);
+
+            customerGetResponse.EnsureSuccessStatusCode();
+
+            return StatusCode(202);
         }
     }
 }
