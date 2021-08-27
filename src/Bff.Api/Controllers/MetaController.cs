@@ -1,5 +1,6 @@
 using System;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace Bff.Api.Controllers
 {
@@ -8,6 +9,13 @@ namespace Bff.Api.Controllers
     [ApiController]
     public class MetaController : ControllerBase
     {
+        private readonly ILogger<MetaController> _logger;
+
+        public MetaController(ILogger<MetaController> logger)
+        {
+            _logger = logger;
+        }
+
         [HttpGet("ping")]
         public ActionResult<string> Ping()
         {
@@ -17,7 +25,15 @@ namespace Bff.Api.Controllers
         [HttpGet("error")]
         public ActionResult Error()
         {
-            throw new UnauthorizedAccessException();
+            try
+            {
+                throw new UnauthorizedAccessException();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "error occurred");
+                throw;
+            }
         }
     }
 }
