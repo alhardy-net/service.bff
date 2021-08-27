@@ -3,10 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Serilog;
-using Serilog.Events;
-using Serilog.Formatting.Compact;
 using Serilog.Formatting.Json;
-using Serilog.Sinks.Grafana.Loki;
 
 namespace Bff.Api
 {
@@ -17,9 +14,9 @@ namespace Bff.Api
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.Console(new JsonFormatter())
                 .CreateBootstrapLogger();
-            
+
             Log.Information("Starting up");
-            
+
             try
             {
                 var host = CreateHostBuilder(args).Build();
