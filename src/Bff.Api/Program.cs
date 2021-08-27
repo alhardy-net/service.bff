@@ -3,6 +3,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Serilog;
+using Serilog.Events;
+using Serilog.Formatting.Compact;
+using Serilog.Formatting.Json;
 using Serilog.Sinks.Grafana.Loki;
 
 namespace Bff.Api
@@ -12,7 +15,7 @@ namespace Bff.Api
         public static async Task<int> Main(string[] args)
         {
             Log.Logger = new LoggerConfiguration()
-                .WriteTo.Console(new LokiJsonTextFormatter())
+                .WriteTo.Console(new JsonFormatter())
                 .CreateBootstrapLogger();
             
             Log.Information("Starting up");
@@ -44,7 +47,7 @@ namespace Bff.Api
                     .ReadFrom.Configuration(context.Configuration)
                     .ReadFrom.Services(services)
                     .Enrich.FromLogContext()
-                    .WriteTo.Console(new LokiJsonTextFormatter()))
+                    .WriteTo.Console(new JsonFormatter()))
                 .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); });
         }
     }
