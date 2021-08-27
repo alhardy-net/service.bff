@@ -9,6 +9,13 @@ namespace Bff.Api.Controllers
     [ApiController]
     public class MetaController : ControllerBase
     {
+        private readonly ILogger<MetaController> _logger;
+
+        public MetaController(ILogger<MetaController> logger)
+        {
+            _logger = logger;
+        }
+
         [HttpGet("ping")]
         public ActionResult<string> Ping()
         {
@@ -19,6 +26,14 @@ namespace Bff.Api.Controllers
         public ActionResult Error()
         {
             throw new UnauthorizedAccessException();
+        }
+        
+        [HttpGet("warn")]
+        public ActionResult Warn()
+        {
+            _logger.LogWarning("Warning message...");
+            
+            return Ok();
         }
     }
 }
