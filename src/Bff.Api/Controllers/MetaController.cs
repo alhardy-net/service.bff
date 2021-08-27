@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Bff.Api.Controllers
@@ -11,6 +12,12 @@ namespace Bff.Api.Controllers
         public ActionResult<string> Ping()
         {
             return Ok("pong");
+        }
+
+        [HttpGet("error")]
+        public ActionResult Error()
+        {
+            throw new UnauthorizedAccessException();
         }
     }
 }
