@@ -43,7 +43,7 @@ namespace Bff.Api
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Bff.Api v1"));
             app.UseMetricServer();
             app.UseRouting();
-
+            app.UseHttpMetrics();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
