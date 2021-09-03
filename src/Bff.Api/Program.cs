@@ -12,6 +12,7 @@ namespace Bff.Api
         public static async Task<int> Main(string[] args)
         {
             Log.Logger = new LoggerConfiguration()
+                .Enrich.FromLogContext()
                 .WriteTo.Console(new JsonFormatter())
                 .CreateBootstrapLogger();
 
