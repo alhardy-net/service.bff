@@ -5,21 +5,44 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using Prometheus;
 
 namespace Bff.Api
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IHostEnvironment environment)
         {
             Configuration = configuration;
+            Environment = environment;
         }
 
         public IConfiguration Configuration { get; }
+        
+        public IHostEnvironment Environment { get; }
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddOpenTelemetryTracing(builder =>
+            {
+                builder.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(Configuration["SERVICE_NAME"]));
+                builder.AddAWSInstrumentation();
+                builder.AddHttpClientInstrumentation();
+                builder.AddAspNetCoreInstrumentation();
+                builder.AddMassTransitInstrumentation();
+
+                if (Environment.IsDevelopment())
+                {
+                    builder.AddConsoleExporter();
+                }
+                else
+                {
+                    builder.AddOtlpExporter();
+                }
+            });
+            
             services.AddHttpClient("customers", c =>
             {
                 c.BaseAddress = new Uri(Configuration.GetValue<string>("CustomerApiBaseAddress"));
