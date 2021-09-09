@@ -27,20 +27,21 @@ namespace Bff.Api
         {
             services.AddOpenTelemetryTracing(builder =>
             {
-                builder.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(Configuration["SERVICE_NAME"]));
-                builder.AddAWSInstrumentation();
-                builder.AddHttpClientInstrumentation();
-                builder.AddAspNetCoreInstrumentation();
-                builder.AddMassTransitInstrumentation();
+                builder.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(Configuration["SERVICE_NAME"]))
+                    .AddAspNetCoreInstrumentation()
+                    .AddHttpClientInstrumentation()
+                    .AddEntityFrameworkCoreInstrumentation()
+                    .AddMassTransitInstrumentation()
+                    .AddAWSInstrumentation();
 
-                if (Environment.IsDevelopment())
+                if (!Environment.IsDevelopment())
                 {
-                    builder.AddConsoleExporter();
+                    builder.AddOtlpExporter(options => options.Endpoint = new Uri("http://localhost:4317"));                   
                 }
                 else
                 {
-                    AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
-                    builder.AddOtlpExporter();
+                    builder.AddOtlpExporter(options => options.Endpoint = new Uri("http://otelcol:4317"));
+                    builder.AddConsoleExporter();
                 }
             });
             

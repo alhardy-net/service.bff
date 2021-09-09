@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Serilog;
+using Serilog.Enrichers.Span;
+using Serilog.Exceptions;
 using Serilog.Formatting.Json;
 
 namespace Bff.Api
@@ -45,6 +47,8 @@ namespace Bff.Api
                     .ReadFrom.Configuration(context.Configuration)
                     .ReadFrom.Services(services)
                     .Enrich.FromLogContext()
+                    .Enrich.WithSpan()
+                    .Enrich.WithExceptionDetails()
                     .WriteTo.Console(new JsonFormatter()))
                 .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); });
         }
